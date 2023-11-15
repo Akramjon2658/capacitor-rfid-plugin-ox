@@ -1,6 +1,6 @@
 # capacitor-rfid-plugin-ox
 
-rfid reader (not ready to use)
+rfid reader for UROVO DT50
 
 ## Install
 
@@ -13,24 +13,68 @@ npx cap sync
 
 <docgen-index>
 
-* [`echo(...)`](#echo)
+* [`startScan()`](#startscan)
+* [`stopScan()`](#stopscan)
+* [`getScanData()`](#getscandata)
+* [`getOutputPower()`](#getoutputpower)
+* [`setOutputPower(...)`](#setoutputpower)
 
 </docgen-index>
 
 <docgen-api>
 <!--Update the source file JSDoc comments and rerun docgen to update the docs below-->
 
-### echo(...)
+### startScan()
 
 ```typescript
-echo(options: { value: string; }) => Promise<{ value: string; }>
+startScan() => Promise<void>
+```
+
+--------------------
+
+
+### stopScan()
+
+```typescript
+stopScan() => Promise<void>
+```
+
+--------------------
+
+
+### getScanData()
+
+```typescript
+getScanData() => Promise<any>
+```
+
+**Returns:** <code>Promise&lt;any&gt;</code>
+
+--------------------
+
+
+### getOutputPower()
+
+```typescript
+getOutputPower() => Promise<{ value: number; }>
+```
+
+**Returns:** <code>Promise&lt;{ value: number; }&gt;</code>
+
+--------------------
+
+
+### setOutputPower(...)
+
+```typescript
+setOutputPower(options: { power: number; }) => Promise<{ value: number; }>
 ```
 
 | Param         | Type                            |
 | ------------- | ------------------------------- |
-| **`options`** | <code>{ value: string; }</code> |
+| **`options`** | <code>{ power: number; }</code> |
 
-**Returns:** <code>Promise&lt;{ value: string; }&gt;</code>
+**Returns:** <code>Promise&lt;{ value: number; }&gt;</code>
 
 --------------------
 

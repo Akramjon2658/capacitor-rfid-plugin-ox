@@ -1,6 +1,6 @@
 {
   "name": "capacitor-rfid-plugin-ox",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "rfid reader (not ready to use)",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -9,6 +9,7 @@
   "files": [
     "android/src/main/",
     "android/build.gradle",
+    "android/libs",
     "dist/",
     "ios/Plugin/",
     "CapacitorRfidPluginOx.podspec"
@@ -30,7 +31,7 @@
   "scripts": {
     "verify": "npm run verify:ios && npm run verify:android && npm run verify:web",
     "verify:ios": "cd ios && pod install && xcodebuild -workspace Plugin.xcworkspace -scheme Plugin -destination generic/platform=iOS && cd ..",
-    "verify:android": "cd android && ./gradlew clean build test && cd ..",
+    "verify:android": "cd android && ./gradlew clean build test && cd .. -Xlint:unchecked",
     "verify:web": "npm run build",
     "lint": "npm run eslint && npm run prettier -- --check && npm run swiftlint -- lint",
     "fmt": "npm run eslint -- --fix && npm run prettier -- --write && npm run swiftlint -- --fix --format",
