@@ -2,6 +2,7 @@ package uz.ox.plugins.rfid;
 
 import android.util.Log;
 
+import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -10,6 +11,7 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import com.ubx.usdk.USDKManager;
 import com.ubx.usdk.rfid.RfidManager;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +36,16 @@ public class RFIDPlugin extends Plugin {
     private final RFID implementation = new RFID(this);
 
     @PluginMethod
+    public void isConnected(PluginCall call) {
+        boolean isConnected = implementation.isConnected();
+
+        JSObject res = new JSObject();
+        res.put("connected", isConnected);
+
+        call.resolve(res);
+    }
+
+    @PluginMethod
     public void startScan(PluginCall call) {
         implementation.startScan();
         call.resolve();
@@ -42,6 +54,12 @@ public class RFIDPlugin extends Plugin {
     @PluginMethod
     public void stopScan(PluginCall call) {
         implementation.stopScan();
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void clearData(PluginCall call) {
+        implementation.clearData();
         call.resolve();
     }
 
@@ -71,5 +89,75 @@ public class RFIDPlugin extends Plugin {
         int power = call.getInt("power", 30);
         implementation.setOutputPower((byte) power);
         call.resolve();
+    }
+
+    @PluginMethod
+    public void getRange(PluginCall call) {
+        JSObject res = new JSObject();
+        res.put("value", implementation.getRange());
+
+        call.resolve(res);
+    }
+
+    @PluginMethod
+    public void setRange(PluginCall call) {
+        int range = call.getInt("range", 30);
+        implementation.setRange(range);
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void getReaderType(PluginCall call) {
+        JSObject res = new JSObject();
+        res.put("value", implementation.getReaderType());
+
+        call.resolve(res);
+    }
+
+    @PluginMethod
+    public void getQueryMode(PluginCall call) {
+        JSObject res = new JSObject();
+        res.put("value", implementation.getQueryMode());
+
+        call.resolve(res);
+    }
+
+    @PluginMethod
+    public void setQueryMode(PluginCall call) {
+        int queryMode = call.getInt("queryMode", 0);
+        implementation.setQueryMode(queryMode);
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void getFirmwareVersion(PluginCall call) {
+        JSObject res = new JSObject();
+        res.put("value", implementation.getFirmwareVersion());
+
+        call.resolve(res);
+    }
+
+    @PluginMethod
+    public void writeEpc(PluginCall call) {
+        String epc = call.getString("epc");
+
+        int result = implementation.writeEpc(epc);
+
+        JSObject res = new JSObject();
+        res.put("value", result);
+
+        call.resolve(res);
+    }
+
+    @PluginMethod
+    public void writeEpcString(PluginCall call) {
+        String epc = call.getString("epc");
+
+        int result = implementation.writeEpcString(epc);
+
+        JSObject res = new JSObject();
+        res.put("value", result);
+
+        call.resolve(res);
     }
 }

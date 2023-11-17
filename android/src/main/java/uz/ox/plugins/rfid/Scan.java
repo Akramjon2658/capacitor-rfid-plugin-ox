@@ -81,6 +81,10 @@ public class Scan extends Fragment {
         }
     }
 
+    public void clearData() {
+        mapData.clear();
+    }
+
     public boolean getIsScanning() {
         return this.scanning;
     }
