@@ -1,6 +1,6 @@
 # capacitor-rfid-plugin-ox
 
-rfid reader for UROVO DT50
+rfid read-write
 
 ## Install
 
@@ -28,6 +28,8 @@ npx cap sync
 * [`getFirmwareVersion()`](#getfirmwareversion)
 * [`writeEpc(...)`](#writeepc)
 * [`writeEpcString(...)`](#writeepcstring)
+* [`startSearch(...)`](#startsearch)
+* [`stopSearch()`](#stopsearch)
 
 </docgen-index>
 
@@ -209,6 +211,28 @@ writeEpcString(options: { epc: string; password?: string; }) => Promise<{ value:
 | **`options`** | <code>{ epc: string; password?: string; }</code> |
 
 **Returns:** <code>Promise&lt;{ value: number; }&gt;</code>
+
+--------------------
+
+
+### startSearch(...)
+
+```typescript
+startSearch(options: { searchableTags: string[]; playSound: boolean; }) => Promise<void>
+```
+
+| Param         | Type                                                           |
+| ------------- | -------------------------------------------------------------- |
+| **`options`** | <code>{ searchableTags: string[]; playSound: boolean; }</code> |
+
+--------------------
+
+
+### stopSearch()
+
+```typescript
+stopSearch() => Promise<void>
+```
 
 --------------------
 

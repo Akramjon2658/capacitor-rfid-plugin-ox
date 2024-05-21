@@ -6,17 +6,19 @@ import android.util.Log;
 import androidx.fragment.app.Fragment;
 
 import com.ubx.usdk.rfid.aidl.IRfidCallback;
-import com.ubx.usdk.util.SoundTool;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import uz.ox.plugins.rfid.pojo.TagScan;
+import uz.ox.plugins.rfid.utils.SoundTool;;
 
 public class Scan extends Fragment {
     private final RFID rfid;
     private final RFIDPlugin rfidPlugin;
+
+    private boolean soundOnSearch = false;
 
     public Scan(RFID rfidWrapper, RFIDPlugin rfidPlugin) {
         this.rfid = rfidWrapper;
@@ -28,6 +30,9 @@ public class Scan extends Fragment {
     public boolean scanning = false;
 
     private ScanCallback callback;
+    private SearchCallback searchCallback;
+    private HashMap<String, Integer> searchableTagsMap;
+
     private List<TagScan> data;
     private HashMap<String, TagScan> mapData = new HashMap<>();
 
@@ -47,7 +52,7 @@ public class Scan extends Fragment {
         return tagReadTotal;
     }
 
-    public void setCallback() {
+    public void setScanCallback() {
         if (this.rfid.mRfidManager != null) {
 
             if (callback == null) {
@@ -57,10 +62,37 @@ public class Scan extends Fragment {
         }
     }
 
+    public void setSearchCallback() {
+        if (this.rfid.mRfidManager != null) {
+
+            if (searchCallback == null) {
+                searchCallback = new SearchCallback();
+            }
+            rfid.mRfidManager.registerCallback(searchCallback);
+        }
+    }
+
     public void startScan() {
         if (rfid.RFID_INIT_STATUS) {
             if (!this.scanning) {
-                setCallback();
+                setScanCallback();
+                setScanStatus(true);
+            }
+        } else {
+            Log.d(TAG, "RFID is not initialized");
+        }
+
+    }
+
+    public void startSearch(List<String> searchableTags, boolean soundOnSearch) {
+        if (rfid.RFID_INIT_STATUS) {
+            if (!this.scanning) {
+                this.soundOnSearch = soundOnSearch;
+                setSearchCallback();
+                searchableTagsMap = new HashMap<>();
+                for (String tag : searchableTags) {
+                    searchableTagsMap.put(tag, 1);
+                }
                 setScanStatus(true);
             }
         } else {
@@ -74,6 +106,19 @@ public class Scan extends Fragment {
             if (this.scanning) {
                 rfid.mRfidManager.unregisterCallback(callback);
                 mapData.clear();
+                setScanStatus(false);
+            }
+        } else {
+            Log.d(TAG, "RFID is not initialized");
+        }
+    }
+
+    public void stopSearch() {
+        if (rfid.RFID_INIT_STATUS) {
+            if (this.scanning) {
+                rfid.mRfidManager.unregisterCallback(searchCallback);
+                mapData.clear();
+                searchableTagsMap.clear();
                 setScanStatus(false);
             }
         } else {
@@ -108,8 +153,7 @@ public class Scan extends Fragment {
     class ScanCallback implements IRfidCallback {
         @Override
         public void onInventoryTag(String EPC, final String TID, final String strRSSI) {
-            notiyDatas(EPC, TID, strRSSI);
-            Log.e(TAG, "onInventoryTag:............... epc: " + EPC + "  tid: " + TID + "  strRSSI: " + TID);
+            notiyDatasScan(EPC, TID, strRSSI);
         }
 
         /**
@@ -117,16 +161,30 @@ public class Scan extends Fragment {
          */
         @Override
         public void onInventoryTagEnd() {
-            Log.i(TAG,"OendO onInventoryTagEnd()" + scanning);
+            Log.i(TAG, "OendO onInventoryTagEnd()" + scanning);
             Log.d(TAG, "onInventoryTagEnd()");
         }
     }
 
-    private void notiyDatas(String s2, String TID, final String strRSSI) {
-        final String mapContainStrFinal = s2+TID;
-        Log.d(TAG, "onInventoryTag: ............... epc: " + s2 + "  tid: " + TID + "  strRSSI: " + TID);
+    class SearchCallback implements IRfidCallback {
+        @Override
+        public void onInventoryTag(String EPC, final String TID, final String strRSSI) {
+            notiyDatasSearch(EPC, TID, strRSSI);
+        }
 
-        if(new Date().getTime() - lastBeepTime.getTime() > 200) {
+        /**
+         * 盘存结束回调(Inventory Command Operate End)
+         */
+        @Override
+        public void onInventoryTagEnd() {
+            Log.i(TAG, "OendO onInventoryTagEnd()" + scanning);
+            Log.d(TAG, "onInventoryTagEnd()");
+        }
+    }
+
+    private void notiyDatasScan(String s2, String TID, final String strRSSI) {
+        final String mapContainStrFinal = s2 + TID;
+        if (new Date().getTime() - lastBeepTime.getTime() > 200) {
             SoundTool.getInstance(BaseApplication.getContext()).playBeep(2);
             lastBeepTime = new Date();
         }
@@ -145,5 +203,17 @@ public class Scan extends Fragment {
         }
 
         tagReadTotal += 1;
+    }
+
+    private void notiyDatasSearch(String s2, String TID, final String strRSSI) {
+        if (searchableTagsMap.containsKey(s2)) {
+            if (this.soundOnSearch && new Date().getTime() - lastBeepTime.getTime() > 40) {
+                SoundTool.getInstance(BaseApplication.getContext()).playBeep(2);
+                lastBeepTime = new Date();
+            }
+
+            TagScan tagScan = new TagScan(s2, TID, strRSSI, 1);
+            rfidPlugin.emitSearchEvent(tagScan);
+        }
     }
 }

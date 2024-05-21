@@ -75,6 +75,19 @@ public class RFID {
         Log.d(TAG, "stop scan");
     }
 
+    public void startSearch(List<String> searchableTags, boolean soundOnSearch) {
+        scan.startSearch(searchableTags, soundOnSearch);
+        Log.d(TAG, "start scan");
+    }
+
+    public void stopSearch() {
+        mDataParents.clear();
+        tagScanSpinner.clear();
+
+        scan.stopSearch();
+        Log.d(TAG, "stop scan");
+    }
+
     public void clearData() {
         mDataParents.clear();
         tagScanSpinner.clear();

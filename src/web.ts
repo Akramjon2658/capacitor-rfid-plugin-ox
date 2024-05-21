@@ -39,12 +39,13 @@ export class RFIDWeb extends WebPlugin implements RFIDPlugin {
     return { value: options.range };
   }
 
-
   async getQueryMode(): Promise<{ value: 0 | 1 | 2 | 3 }> {
     return { value: 0 };
   }
 
-  async setQueryMode(options: { queryMode: 0 | 1 | 2 | 3 }): Promise<{ value: number }> {
+  async setQueryMode(options: {
+    queryMode: 0 | 1 | 2 | 3;
+  }): Promise<{ value: number }> {
     return { value: options.queryMode };
   }
 
@@ -56,15 +57,31 @@ export class RFIDWeb extends WebPlugin implements RFIDPlugin {
     return { value: 'not implemented' };
   }
 
-  async writeEpc(options: { epc: string, password?: string }): Promise<{ value: number }> {
-    console.log(options.epc)
+  async writeEpc(options: {
+    epc: string;
+    password?: string;
+  }): Promise<{ value: number }> {
+    console.log(options.epc);
 
-    return { value: - 1 }
+    return { value: -1 };
   }
 
-  async writeEpcString(options: { epc: string, password?: string }): Promise<{ value: number }> {
-    console.log(options.epc)
+  async writeEpcString(options: {
+    epc: string;
+    password?: string;
+  }): Promise<{ value: number }> {
+    console.log(options.epc);
 
-    return { value: - 1 }
+    return { value: -1 };
+  }
+
+  async startSearch(options: { searchableTags: string[], playSound: boolean }): Promise<void> {
+    console.log(options.searchableTags);
+
+    return Promise.resolve();
+  }
+
+  async stopSearch(): Promise<void> {
+    return Promise.resolve();
   }
 }

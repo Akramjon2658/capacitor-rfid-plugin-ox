@@ -11,6 +11,8 @@ import com.getcapacitor.annotation.CapacitorPlugin;
 import com.ubx.usdk.USDKManager;
 import com.ubx.usdk.rfid.RfidManager;
 
+import org.json.JSONException;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +33,15 @@ public class RFIDPlugin extends Plugin {
         ret.put("rssi", tagScan.getRssi());
         Log.d("new scan data", tagScan.getEpc() + " _ " + tagScan.getRssi());
         notifyListeners("onScanEvent", ret);
+    }
+
+    public void emitSearchEvent(TagScan tagScan) {
+        JSObject ret = new JSObject();
+        ret.put("epc", tagScan.getEpc());
+        ret.put("tid", tagScan.getTid());
+        ret.put("rssi", tagScan.getRssi());
+        Log.d("new scan data", tagScan.getEpc() + " _ " + tagScan.getRssi());
+        notifyListeners("onSearchEvent", ret);
     }
 
     private final RFID implementation = new RFID(this);
@@ -54,6 +65,21 @@ public class RFIDPlugin extends Plugin {
     @PluginMethod
     public void stopScan(PluginCall call) {
         implementation.stopScan();
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void startSearch(PluginCall call) throws JSONException {
+        JSArray searchableTags = call.getArray("searchableTags", JSArray.from(new String[] {}));
+        boolean soundOnSearch = call.getBoolean("playSound", false);
+
+        implementation.startSearch(searchableTags.toList(), soundOnSearch);
+        call.resolve();
+    }
+
+    @PluginMethod
+    public void stopSearch(PluginCall call) {
+        implementation.stopSearch();
         call.resolve();
     }
 
